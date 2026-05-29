@@ -1,20 +1,22 @@
-# Infraestrutura Web com Nginx Proxy Reverso + API REST (Python/Flask)
+# Infraestrutura Web com Nginx Proxy Reverso + API REST
 
 ## Integrantes
 
-| Nome | RA |
-|------|----|
+| Nome |
+|------|
 | Ariane de Souza Franca
 | Lívia Martins Bastos
+| José Henrique Martins B. Silva
+| Lamartine Almeida
 
 ---
 
 ## Descrição
 
-Projeto que simula uma infraestrutura web real utilizando duas Máquinas Virtuais (VMs) na mesma rede interna. O Nginx atua como Proxy Reverso na VM 1, redirecionando as requisições para a API REST em Python (Flask) rodando na VM 2, que se conecta a um banco de dados MySQL.
+Projeto Simula uma conexão Entre duas máquinas, configurada para ser intermediadora entre o clientes e o Servidor(Banckend). A primeira máquina tem o Backend e Nginx com a proxy Reversa. A segunda é o clientes. Não foi possível por conta da insfraestrura permitir ter 3 computadores para simular.
 
 Fluxo:
-Cliente (Seu PC) ──> VM 1 (Nginx / Proxy Reverso) ──> VM 2 (Flask API + MySQL)
+Cliente (Seu PC) ──> VM 1 (Nginx / Proxy Reverso) e (Flask API + MySQL)
 
 ---
 
@@ -22,32 +24,31 @@ Cliente (Seu PC) ──> VM 1 (Nginx / Proxy Reverso) ──> VM 2 (Flask API + 
 
 | Máquina | Função | IP |
 |---------|--------|----|
-| VM 1 | Nginx – Proxy Reverso | 192.168.56.101 |
-| VM 2 | API Flask + MySQL | 192.168.56.102 |
+| VM 1 | Nginx – Proxy Reverso | API Flask + MySQL | 192.168.56.102 |
 
----
+
 
 ## Estrutura do Repositório
 
-/
-├── README.md
+```text
+Projeto/
 ├── api/
 │   ├── app.py
 │   ├── database.py
 │   └── requirements.txt
 ├── database/
 │   └── schema.sql
+├── docs/
+│   └── rotas.md
 ├── nginx/
 │   └── api
-└── docs/
-    └── rotas.md
-
----
+└── README.md
+```
 
 ## Pré-requisitos
 
 - Duas VMs com Ubuntu Server 22.04 ou Debian
-- Rede configurada em modo Host-Only ou Bridge
+- Rede configurada em modo Host-Only ou Bridge Caso for VM
 - Acesso SSH ou terminal nas duas VMs
 
 ---
@@ -108,6 +109,7 @@ sudo systemctl reload nginx
 
 ## Testando o fluxo completo
 
+```texto
 curl http://192.168.56.101/clientes
 
 curl -X POST http://192.168.56.101/clientes \
@@ -129,9 +131,7 @@ curl -X POST http://192.168.56.101/produtos \
   -d '{"nome": "Notebook", "preco": 3500.00, "estoque": 10}'
 
 ---
-
+``
 ## Tecnologias Utilizadas
 
-- VM 1: Ubuntu Server 22.04 ou Debian + Nginx
-- VM 2: Ubuntu Server 22.04 ou Debian + Python 3 + Flask + MySQL
-- Virtualização: VirtualBox (modo Host-Only)
+- Máquina 1: Ubuntu + Python 3 + Flask + MySQL
