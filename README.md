@@ -37,7 +37,9 @@ Foto do meu PC Rodando
 
 ## Estrutura do Repositório
 
-.
+```
+
+
 ├── docker-compose.yml       # Orquestração dos 3 containers e redes
 ├── README.md                # Documentação da infraestrutura e testes
 ├── api/
@@ -52,7 +54,7 @@ Foto do meu PC Rodando
 └── docs/
     └── rotas.md             # Especificação dos endpoints
 
----
+```
 
 ## Pré-requisitos
 
@@ -84,7 +86,7 @@ docker compose ps
 
 ---
 
-## Testes de Validação e Prova de Conceito
+## Testes de Validação
 
 Os comandos abaixo podem ser executados no terminal da sua máquina hospedeira.
 
@@ -123,7 +125,7 @@ curl http://localhost:8080/produtos
 
 ---
 
-### 2. Comprovação do Isolamento de Rede e Segurança
+### 2. Comprovação do Isolamento de Rede
 
 Os serviços da API (porta 3000) e do MySQL (porta 3306) não expõem portas externas. Eles operam isoladamente dentro da rede virtual rede_app.
 
