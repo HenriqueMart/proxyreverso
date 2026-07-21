@@ -21,7 +21,7 @@ O Nginx atua como Proxy Reverso, sendo o único ponto de entrada exposto, redire
 
 Foto do meu PC Rodando
 
-![Arquitetura](./img/image.png)
+![Arquitetura](./img/arquiteture.png)
 
 ---
 
