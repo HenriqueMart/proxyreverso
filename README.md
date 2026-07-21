@@ -3,7 +3,7 @@
 ## Integrantes
 
 | Nome |
-|------|----|
+|------|
 | Ariane de Souza Franca | 
 | Lívia Martins Bastos |
 | José Henrique Martins |
