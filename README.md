@@ -1,137 +1,135 @@
-# Infraestrutura Web com Nginx Proxy Reverso + API REST (Python/Flask)
+# Infraestrutura Web Containerizada: Nginx (Proxy Reverso) + API REST (Flask) + MySQL
 
 ## Integrantes
 
-| Nome | RA |
+| Nome |
 |------|----|
-| Ariane de Souza Franca
-| Lívia Martins Bastos
+| Ariane de Souza Franca | 
+| Lívia Martins Bastos |
+| José Henrique Martins |
+| Lamartine |
 
 ---
 
-## Descrição
+## Descrição do Projeto
 
-Projeto que simula uma infraestrutura web real utilizando duas Máquinas Virtuais (VMs) na mesma rede interna. O Nginx atua como Proxy Reverso na VM 1, redirecionando as requisições para a API REST em Python (Flask) rodando na VM 2, que se conecta a um banco de dados MySQL.
+Este projeto simula uma arquitetura de infraestrutura web de três camadas (Proxy, Aplicação e Banco de Dados) utilizando Docker Containers e Docker Compose. 
 
-Fluxo:
-Cliente (Seu PC) ──> VM 1 (Nginx / Proxy Reverso) ──> VM 2 (Flask API + MySQL)
+O Nginx atua como Proxy Reverso, sendo o único ponto de entrada exposto, redirecionando o tráfego HTTP para a API REST em Python (Flask). A API processa as requisições e se conecta ao MySQL para persistência de dados. Toda a comunicação interna ocorre dentro de uma rede virtual isolada do Docker.
 
----
+### Arquitetura e Fluxo
 
-## Endereços IP das VMs
+Foto do meu PC Rodando
 
-| Máquina | Função | IP |
-|---------|--------|----|
-| VM 1 | Nginx – Proxy Reverso | 192.168.56.101 |
-| VM 2 | API Flask + MySQL | 192.168.56.102 |
-
----
-
-## Estrutura do Repositório
-
-/
-├── README.md
-├── api/
-│   ├── app.py
-│   ├── database.py
-│   └── requirements.txt
-├── database/
-│   └── schema.sql
-├── nginx/
-│   └── api
-└── docs/
-    └── rotas.md
-
----
-
-## Pré-requisitos
-
-- Duas VMs com Ubuntu Server 22.04 ou Debian
-- Rede configurada em modo Host-Only ou Bridge
-- Acesso SSH ou terminal nas duas VMs
-
----
-
-## Guia de Execução
-
-### VM 2 — Banco de Dados (MySQL)
-
-1. Instalar o MySQL:
-sudo apt update
-sudo apt install default-mysql-server -y
-
-2. Criar usuário e banco:
-sudo mysql -u root -p
-
-CREATE DATABASE minha_api;
-CREATE USER 'apiuser'@'localhost' IDENTIFIED BY 'senha123';
-GRANT ALL PRIVILEGES ON minha_api.* TO 'apiuser'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-
-3. Importar o schema:
-sudo mysql -u root -p minha_api < database/schema.sql
-
-### VM 2 — API REST (Flask)
-
-1. Instalar dependências:
-sudo apt install python3-pip python3-dev default-libmysqlclient-dev build-essential -y
-
-2. Instalar dependências Python:
-pip3 install -r api/requirements.txt
-
-3. Iniciar a API:
-python3 api/app.py
-
-A API ficará disponível em http://192.168.56.102:3000
-
-### VM 1 — Nginx (Proxy Reverso)
-
-1. Instalar o Nginx:
-sudo apt update
-sudo apt install nginx -y
-
-2. Copiar o arquivo de configuração:
-sudo cp nginx/api /etc/nginx/sites-available/api
-
-3. Ativar o Virtual Host:
-sudo ln -s /etc/nginx/sites-available/api /etc/nginx/sites-enabled/api
-
-4. Remover o Virtual Host padrão:
-sudo rm -f /etc/nginx/sites-enabled/default
-
-5. Testar e recarregar:
-sudo nginx -t
-sudo systemctl reload nginx
-
----
-
-## Testando o fluxo completo
-
-curl http://192.168.56.101/clientes
-
-curl -X POST http://192.168.56.101/clientes \
-  -H "Content-Type: application/json" \
-  -d '{"nome": "João Silva", "email": "joao@email.com"}'
-
-curl http://192.168.56.101/clientes/1
-
-curl -X PUT http://192.168.56.101/clientes/1 \
-  -H "Content-Type: application/json" \
-  -d '{"nome": "João Atualizado", "email": "joao@email.com"}'
-
-curl -X DELETE http://192.168.56.101/clientes/1
-
-curl http://192.168.56.101/produtos
-
-curl -X POST http://192.168.56.101/produtos \
-  -H "Content-Type: application/json" \
-  -d '{"nome": "Notebook", "preco": 3500.00, "estoque": 10}'
+![Arquitetura](./img/image.png)
 
 ---
 
 ## Tecnologias Utilizadas
 
-- VM 1: Ubuntu Server 22.04 ou Debian + Nginx
-- VM 2: Ubuntu Server 22.04 ou Debian + Python 3 + Flask + MySQL
-- Virtualização: VirtualBox (modo Host-Only)
+- Proxy Reverso: Nginx (nginx:alpine)
+- Backend API: Python 3.10 + Flask + flask-mysqldb
+- Banco de Dados: MySQL 8.0
+- Orquestração e Rede: Docker & Docker Compose
+- Persistência de Dados: Volume de Dados do Docker (db_data)
+
+---
+
+## Estrutura do Repositório
+
+.
+├── docker-compose.yml       # Orquestração dos 3 containers e redes
+├── README.md                # Documentação da infraestrutura e testes
+├── api/
+│   ├── app.py               # Rotas e regras de negócio
+│   ├── database.py          # Conexão com o banco de dados
+│   ├── Dockerfile           # Imagem customizada da API Flask
+│   └── requirements.txt     # Dependências Python
+├── database/
+│   └── schema.sql           # Script de inicialização das tabelas
+├── nginx/
+│   └── api.conf             # Configuração do Proxy Reverso
+└── docs/
+    └── rotas.md             # Especificação dos endpoints
+
+---
+
+## Pré-requisitos
+
+- Docker instalado (docker --version)
+- Docker Compose V2 instalado (docker compose version)
+
+---
+
+## Guia de Execução
+
+Toda a infraestrutura é criada e configurada automaticamente em apenas um comando através do Docker Compose.
+
+### 1. Clonar o repositório e acessar a pasta
+
+git clone https://github.com/HenriqueMart/proxyreverso
+cd proxyreverso
+
+### 2. Subir o ambiente
+
+Execute o comando a seguir para construir as imagens e iniciar os 3 containers em segundo plano:
+
+docker compose up --build -d
+
+### 3. Verificar o status dos containers
+
+Para confirmar se todos os 3 containers estão em execução:
+
+docker compose ps
+
+---
+
+## Testes de Validação e Prova de Conceito
+
+Os comandos abaixo podem ser executados no terminal da sua máquina hospedeira.
+
+### 1. Testando as Rotas da API (via Nginx na porta 8080)
+
+#### Clientes
+
+# Cadastrar um novo cliente (POST)
+curl -X POST http://localhost:8080/clientes \
+  -H "Content-Type: application/json" \
+  -d '{"nome": "João Silva", "email": "joao@email.com"}'
+
+# Listar todos os clientes (GET)
+curl http://localhost:8080/clientes
+
+# Buscar cliente por ID (GET)
+curl http://localhost:8080/clientes/1
+
+# Atualizar cliente (PUT)
+curl -X PUT http://localhost:8080/clientes/1 \
+  -H "Content-Type: application/json" \
+  -d '{"nome": "João Atualizado", "email": "joao@email.com"}'
+
+# Deletar cliente (DELETE)
+curl -X DELETE http://localhost:8080/clientes/1
+
+#### Produtos
+
+# Cadastrar um novo produto (POST)
+curl -X POST http://localhost:8080/produtos \
+  -H "Content-Type: application/json" \
+  -d '{"nome": "Notebook", "preco": 3500.00, "estoque": 10}'
+
+# Listar todos os produtos (GET)
+curl http://localhost:8080/produtos
+
+---
+
+### 2. Comprovação do Isolamento de Rede e Segurança
+
+Os serviços da API (porta 3000) e do MySQL (porta 3306) não expõem portas externas. Eles operam isoladamente dentro da rede virtual rede_app.
+
+# Tentativa de acesso direto à API (Porta 3000) -> Conexão recusada
+curl http://localhost:3000/clientes
+
+# Tentativa de acesso direto ao MySQL (Porta 3306) -> Conexão recusada
+curl http://localhost:3306
+
